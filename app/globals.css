@@ -1,12 +1,26 @@
+/* Palette from the "Öykü Erdem Site" prototype. Dark by default; the light
+   variant below follows the computer's appearance setting. */
 :root {
-  --bg: #0d1117;
-  --panel: #161b22;
-  --panel-2: #21262d;
+  --bg: #05070c;
+  --panel: #0b0f17;
+  --panel-2: #141a24;
   --fg: #e6edf3;
   --muted: #8d96a0;
   --line: #30363d;
   --link: #58a6ff;
   --green: #3fb950;
+  --yellow: #d29922;
+  --red: #f85149;
+  --orange: #f78166;
+  --page: #0d1117;
+  --glow-1: rgba(138, 102, 255, 0.45);
+  --glow-2: rgba(91, 230, 200, 0.28);
+  --glow-3: rgba(255, 140, 190, 0.22);
+  --dots: rgba(255, 255, 255, 0.10);
+  --topbar: rgba(11, 15, 23, 0.92);
+  --shadow: rgba(0, 0, 0, 0.35);
+  --sans: var(--font-sans), -apple-system, "Segoe UI", system-ui, sans-serif;
+  --mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   color-scheme: dark;
 }
 
@@ -20,6 +34,16 @@
     --line: #d0d7de;
     --link: #0969da;
     --green: #1a7f37;
+    --yellow: #9a6700;
+    --red: #cf222e;
+    --orange: #bc4c00;
+    --page: #f6f8fa;
+    --glow-1: rgba(138, 102, 255, 0.18);
+    --glow-2: rgba(91, 230, 200, 0.16);
+    --glow-3: rgba(255, 140, 190, 0.14);
+    --dots: rgba(31, 35, 40, 0.10);
+    --topbar: rgba(255, 255, 255, 0.92);
+    --shadow: rgba(31, 35, 40, 0.12);
     color-scheme: light;
   }
 }
@@ -28,45 +52,63 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--page);
+  background-image:
+    radial-gradient(circle at 12% 8%, var(--glow-1), transparent 38%),
+    radial-gradient(circle at 88% 22%, var(--glow-2), transparent 40%),
+    radial-gradient(circle at 60% 90%, var(--glow-3), transparent 45%),
+    radial-gradient(var(--dots) 1px, transparent 1px);
+  background-size: auto, auto, auto, 26px 26px;
+  background-attachment: fixed;
   color: var(--fg);
-  font: 400 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 400 14px/1.55 var(--sans);
   min-height: 100vh;
+  padding: 0 16px 48px;
 }
 
-a { color: var(--link); }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3 { line-height: 1.25; }
 
+/* Floating header: crumbs and badges, then pill tabs */
 .topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  max-width: 960px;
-  margin: 16px auto 0;
-  padding: 10px 16px;
+  position: sticky;
+  top: 8px;
+  z-index: 2;
+  max-width: 1012px;
+  margin: 12px auto 0;
+  background: var(--topbar);
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: var(--panel);
+  box-shadow: 0 8px 24px var(--shadow);
+  backdrop-filter: blur(8px);
 }
-
-.brand { font-weight: 600; color: var(--fg); text-decoration: none; }
-
-.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-.tabs a {
-  padding: 6px 12px;
-  border-radius: 999px;
-  text-decoration: none;
-  color: var(--muted);
-  font-size: 14px;
+.topbar-in {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 12px 16px 10px;
 }
-.tabs a:hover { color: var(--fg); background: var(--panel-2); }
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 16px; min-width: 0; }
+.crumbs .owner, .crumbs .repo-name { color: var(--link); font-weight: 600; overflow-wrap: anywhere; }
+.crumbs .sep { color: var(--muted); }
+.badge { font: 500 12px var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+.badge.ok { color: var(--green); border-color: color-mix(in srgb, var(--green) 40%, transparent); }
+
+.tabs { display: flex; gap: 4px; overflow-x: auto; padding: 4px 10px 10px; }
+.tabs a { color: var(--fg); padding: 6px 14px; border-radius: 999px; white-space: nowrap; font-size: 14px; }
+.tabs a:hover { text-decoration: none; background: var(--panel-2); }
+.tabs a[aria-current="page"] { background: var(--panel-2); color: var(--link); font-weight: 600; }
 
 .wrap {
-  max-width: 960px;
+  max-width: 1012px;
   margin: 0 auto;
-  padding: 24px 16px 64px;
+  padding: 24px 0 64px;
 }
+.wrap > div > h1:first-child { font: 600 22px var(--sans); margin: 0 0 6px; }
 
 .side-layout {
   display: grid;
@@ -82,7 +124,7 @@ a { color: var(--link); }
   background: linear-gradient(135deg, #1f6feb, #8957e5);
   display: grid;
   place-items: center;
-  font: 600 56px system-ui, sans-serif;
+  font: 600 56px var(--sans);
   color: #fff;
   border: 1px solid var(--line);
   overflow: hidden;
@@ -94,7 +136,7 @@ a { color: var(--link); }
 
 .card {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 6px;
   background: var(--panel);
   padding: 16px;
   margin-bottom: 16px;
@@ -122,7 +164,7 @@ a { color: var(--link); }
 .card.cal-card { padding: 32px; }
 .card .cal-label {
   margin: 0 0 20px;
-  font: 400 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  font: 400 13px/1.4 var(--mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
@@ -135,7 +177,7 @@ a { color: var(--link); }
   grid-template-columns: repeat(7, 1fr);
   gap: 8px;
   text-align: center;
-  font: 400 14px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  font: 400 14px/1 var(--mono);
 }
 .cal-head { color: var(--muted); padding: 4px 0 6px; }
 .cal-day {
@@ -189,11 +231,11 @@ button.ghost {
   background: var(--panel-2);
   border: 1px solid var(--line);
 }
-button.danger { color: #f85149; }
+button.danger { color: var(--red); }
 .admin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
 .admin h1 { margin: 0; font-size: 22px; }
 .status { color: var(--green); }
-.status.error { color: #f85149; }
+.status.error { color: var(--red); }
 .row-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
 .row-actions { display: flex; gap: 8px; }
 .project-item { padding: 12px 0; border-top: 1px solid var(--line); }
