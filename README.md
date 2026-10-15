@@ -10,7 +10,7 @@ Personal site for Öykü Erdem. Next.js on Vercel, with Supabase for content and
 
 ## Deploy
 
-Import this repository in Vercel and add the same two variables, `SUPABASE_URL` and `SUPABASE_ANON_KEY`, under Environment Variables.
+Import this repository in Vercel and add the same two variables, `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`, under Environment Variables.
 
 ## Admin
 

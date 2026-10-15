@@ -118,6 +118,46 @@ a { color: var(--link); }
 
 .empty { color: var(--muted); }
 
+/* Forms (admin) */
+.narrow { max-width: 420px; }
+form { display: grid; gap: 12px; margin-top: 8px; }
+label { display: grid; gap: 6px; color: var(--muted); font-size: 14px; }
+label.check { display: flex; align-items: center; gap: 8px; }
+input[type="text"], input[type="email"], textarea {
+  width: 100%;
+  font: inherit;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+textarea { resize: vertical; }
+button {
+  justify-self: start;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: #238636;
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+button:hover { filter: brightness(1.08); }
+button.ghost {
+  color: var(--fg);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+}
+button.danger { color: #f85149; }
+.admin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.admin h1 { margin: 0; font-size: 22px; }
+.status { color: var(--green); }
+.status.error { color: #f85149; }
+.row-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.row-actions { display: flex; gap: 8px; }
+
 @media (max-width: 720px) {
   .side-layout { grid-template-columns: 1fr; }
   .avatar { width: 160px; font-size: 44px; }
