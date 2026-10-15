@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { shortDate } from "@/lib/format";
 
 export const revalidate = 60;
 
@@ -10,6 +11,13 @@ type CloudNote = {
   created_at: string;
 };
 
+const DOMAINS = [
+  "Design secure architectures",
+  "Design resilient architectures",
+  "Design high-performing architectures",
+  "Design cost-optimized architectures",
+];
+
 export default async function CloudNotes() {
   const { data, error } = await supabase
     .from("cloud_notes")
@@ -18,31 +26,36 @@ export default async function CloudNotes() {
 
   const notes = (error ? [] : data ?? []) as CloudNote[];
 
-  // Group notes by exam domain, keeping the order they first appear in.
-  const groups = new Map<string, CloudNote[]>();
-  for (const note of notes) {
-    const key = note.domain || "General";
-    groups.set(key, [...(groups.get(key) ?? []), note]);
-  }
-
   return (
     <div>
-      <h1>Cloud study log</h1>
-      <p className="muted">AWS Certified Solutions Architect – Associate (SAA-C03) notes, by domain.</p>
+      <h1>Cloud architecture notes</h1>
+      <p className="lead">
+        Study log for AWS Certified Solutions Architect – Associate (SAA-C03), by exam domain.
+      </p>
+
+      <ul className="domains" aria-label="Exam domains">
+        {DOMAINS.map((d, i) => (
+          <li key={d}>
+            <b>Domain {i + 1}</b>
+            {d}
+          </li>
+        ))}
+      </ul>
 
       {notes.length === 0 ? (
-        <p className="empty">No notes yet.</p>
+        <div className="empty-box">No notes yet.</div>
       ) : (
-        Array.from(groups.entries()).map(([domain, items]) => (
-          <section key={domain}>
-            <h2>{domain}</h2>
-            {items.map((note) => (
-              <article className="card" key={note.id}>
-                <h3>{note.title}</h3>
-                <p className="post-body">{note.body}</p>
-              </article>
-            ))}
-          </section>
+        notes.map((note) => (
+          <article className="entry" key={note.id}>
+            <div className="entry-head">
+              <h3>{note.title}</h3>
+              <div className="meta-row">
+                {note.domain ? <span className="pill">{note.domain}</span> : null}
+                <span className="mono-label">{shortDate(note.created_at)}</span>
+              </div>
+            </div>
+            <p className="body">{note.body}</p>
+          </article>
         ))
       )}
     </div>
