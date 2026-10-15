@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { shortDate } from "@/lib/format";
 import { berlinDayKey, dayKey, upcomingPostDates } from "@/lib/schedule";
 import Calendar from "./Calendar";
+import Newsletter from "./Newsletter";
 
 export const revalidate = 60;
 
@@ -57,6 +58,8 @@ export default async function Blog() {
         </div>
         <p className="cal-label cal-legend">Outlined = post day · filled = published</p>
       </section>
+
+      <Newsletter />
 
       {posts.length === 0 ? (
         <div className="empty-box">No posts yet. The first one is on the way.</div>

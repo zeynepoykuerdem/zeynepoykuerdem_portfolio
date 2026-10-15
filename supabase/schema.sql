@@ -99,6 +99,15 @@ create table if not exists public.projects (
     constraint projects_pipeline_is_array check (jsonb_typeof(pipeline) = 'array')
 );
 
+-- Newsletter box on the blog; shown only while url is a valid https:// sign-up link.
+create table if not exists public.newsletter (
+  id int primary key default 1 check (id = 1),
+  url text not null default '' check (url = '' or url ~ '^https://\S+$'),
+  text text not null default '',
+  frequency text not null default '',
+  updated_at timestamptz not null default now()
+);
+
 -- ---------- Row-level security ----------
 alter table public.profile enable row level security;
 alter table public.posts enable row level security;
@@ -106,6 +115,7 @@ alter table public.cloud_notes enable row level security;
 alter table public.mcp_notes enable row level security;
 alter table public.now_page enable row level security;
 alter table public.projects enable row level security;
+alter table public.newsletter enable row level security;
 
 -- Public read
 create policy "profile is public" on public.profile for select using (true);
@@ -114,6 +124,7 @@ create policy "cloud notes are public" on public.cloud_notes for select using (t
 create policy "mcp notes are public" on public.mcp_notes for select using (true);
 create policy "now page is public" on public.now_page for select using (true);
 create policy "projects are public" on public.projects for select using (true);
+create policy "newsletter is public" on public.newsletter for select using (true);
 
 -- Admin write (insert, update, delete)
 create policy "admins write profile" on public.profile for all using (public.is_admin()) with check (public.is_admin());
@@ -122,6 +133,7 @@ create policy "admins write cloud notes" on public.cloud_notes for all using (pu
 create policy "admins write mcp notes" on public.mcp_notes for all using (public.is_admin()) with check (public.is_admin());
 create policy "admins write now page" on public.now_page for all using (public.is_admin()) with check (public.is_admin());
 create policy "admins write projects" on public.projects for all using (public.is_admin()) with check (public.is_admin());
+create policy "admins write newsletter" on public.newsletter for all using (public.is_admin()) with check (public.is_admin());
 
 -- ---------- Images ----------
 insert into storage.buckets (id, name, public)

@@ -343,6 +343,35 @@ h3 {
   border-radius: 6px;
   border: 1px solid var(--line);
 }
+
+/* Newsletter box on the blog (app/blog/Newsletter.tsx) */
+.newsletter {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.newsletter h3 {
+  font: 600 16px var(--sans);
+  margin: 4px 0 6px;
+}
+.newsletter p {
+  margin: 0 0 8px;
+  color: var(--muted);
+}
+.btn {
+  display: inline-block;
+  padding: 6px 14px;
+  font: 500 14px var(--sans);
+  color: #fff;
+  background: #238636;
+  border-radius: 6px;
+}
+.btn:hover {
+  text-decoration: none;
+  background: #2ea043;
+}
 .meta-row {
   display: flex;
   flex-wrap: wrap;
