@@ -15,3 +15,4 @@ Import this repository in Vercel and add the same two `NEXT_PUBLIC_SUPABASE_*` v
 ## Admin
 
 Admin access is granted per user in the `admins` table. Add your user id after your first sign-in. Never commit the `service_role` key.
+
