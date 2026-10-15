@@ -4,7 +4,7 @@ Personal site for Öykü Erdem. Next.js on Vercel, with Supabase for content and
 
 ## Setup
 
-1. Create a Supabase project and run `supabase/schema.sql` in the SQL Editor.
+1. Create a Supabase project and run `supabase/schema.sql` in the SQL Editor. For a database set up from an older `schema.sql`, run the files in `supabase/migrations/` in order instead.
 2. Copy `.env.example` to `.env.local` and fill in the Project URL and the anon (publishable) key from Supabase → Settings → API.
 3. `npm install`, then `npm run dev`.
 

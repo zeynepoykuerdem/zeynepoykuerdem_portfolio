@@ -7,6 +7,12 @@ export function dayKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
+// The yyyy-mm-dd day a timestamp falls on in Berlin, so a post published
+// shortly after midnight on Friday counts as Friday, not Thursday (UTC).
+export function berlinDayKey(d: Date): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Berlin" }).format(d);
+}
+
 // The next `count` post dates on or after `from`.
 export function upcomingPostDates(from: Date, count: number): Date[] {
   let time = FIRST_POST_DATE;

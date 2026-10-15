@@ -149,7 +149,7 @@ a { color: var(--link); }
 }
 .cal-day.today { border-color: var(--link); }
 .cal-day.post { border-color: var(--green); color: var(--green); font-weight: 700; }
-.cal-day.published { background: var(--green); border-color: var(--green); color: var(--bg); font-weight: 700; }
+.cal-day.published { background: color-mix(in srgb, var(--green) 18%, var(--bg)); border-color: var(--green); color: var(--green); font-weight: 700; }
 
 @media (max-width: 720px) {
   .card.cal-card { padding: 20px 16px; }
@@ -183,6 +183,7 @@ button {
   cursor: pointer;
 }
 button:hover { filter: brightness(1.08); }
+button:disabled { opacity: 0.6; cursor: default; filter: none; }
 button.ghost {
   color: var(--fg);
   background: var(--panel-2);

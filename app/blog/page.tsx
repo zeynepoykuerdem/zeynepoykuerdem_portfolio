@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { dayKey, upcomingPostDates } from "@/lib/schedule";
+import { berlinDayKey, dayKey, upcomingPostDates } from "@/lib/schedule";
 import Calendar from "./Calendar";
 
 export const revalidate = 60;
@@ -9,14 +9,15 @@ type Post = {
   title: string;
   body: string;
   created_at: string;
+  published_at: string | null;
 };
 
 export default async function Blog() {
   const { data, error } = await supabase
     .from("posts")
-    .select("id, title, body, created_at")
+    .select("id, title, body, created_at, published_at")
     .eq("published", true)
-    .order("created_at", { ascending: false });
+    .order("published_at", { ascending: false, nullsFirst: false });
 
   const posts = (error ? [] : data ?? []) as Post[];
 
@@ -25,7 +26,7 @@ export default async function Blog() {
   const nextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
   // Start from the 1st so post days earlier this month stay marked.
   const marked = new Set(upcomingPostDates(thisMonth, 6).map(dayKey));
-  const published = new Set(posts.map((p) => dayKey(new Date(p.created_at))));
+  const published = new Set(posts.map((p) => berlinDayKey(new Date(p.published_at ?? p.created_at))));
   const today = dayKey(now);
 
   return (
@@ -57,10 +58,11 @@ export default async function Blog() {
           <article className="card" key={post.id}>
             <h2>{post.title}</h2>
             <p className="muted">
-              {new Date(post.created_at).toLocaleDateString("en-GB", {
+              {new Date(post.published_at ?? post.created_at).toLocaleDateString("en-GB", {
                 day: "numeric",
                 month: "long",
                 year: "numeric",
+                timeZone: "Europe/Berlin",
               })}
             </p>
             <p className="post-body" style={{ marginTop: 8 }}>
