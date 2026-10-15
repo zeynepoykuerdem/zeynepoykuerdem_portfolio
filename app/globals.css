@@ -118,6 +118,16 @@ a { color: var(--link); }
 
 .empty { color: var(--muted); }
 
+/* Blog calendar */
+.next-dates { margin: 0 0 16px; padding-left: 18px; color: var(--fg); }
+.cal-months { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.calendar h3 { margin: 0 0 8px; font-size: 16px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 13px; }
+.cal-head { color: var(--muted); padding: 4px 0; }
+.cal-day { padding: 6px 0; border-radius: 6px; color: var(--muted); }
+.cal-day.post { background: var(--link); color: #fff; font-weight: 600; }
+.cal-day.today { outline: 1px solid var(--green); outline-offset: -1px; color: var(--fg); }
+
 /* Forms (admin) */
 .narrow { max-width: 420px; }
 form { display: grid; gap: 12px; margin-top: 8px; }
