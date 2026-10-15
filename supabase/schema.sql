@@ -34,8 +34,30 @@ create table if not exists public.posts (
   body text not null default '',
   image_url text,
   published boolean not null default false,
+  published_at timestamptz,
   created_at timestamptz not null default now()
 );
+
+-- Sets published_at when a post goes live and clears it when it is unpublished,
+-- so the blog calendar marks the day a post was published, not the day it was drafted.
+create or replace function public.set_published_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  if new.published and (tg_op = 'INSERT' or not old.published) then
+    new.published_at := now();
+  elsif not new.published then
+    new.published_at := null;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists posts_set_published_at on public.posts;
+create trigger posts_set_published_at
+  before insert or update of published on public.posts
+  for each row execute function public.set_published_at();
 
 create table if not exists public.cloud_notes (
   id uuid primary key default gen_random_uuid(),

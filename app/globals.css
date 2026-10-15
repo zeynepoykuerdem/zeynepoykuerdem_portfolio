@@ -183,6 +183,7 @@ button {
   cursor: pointer;
 }
 button:hover { filter: brightness(1.08); }
+button:disabled { opacity: 0.6; cursor: default; filter: none; }
 button.ghost {
   color: var(--fg);
   background: var(--panel-2);
