@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <header className="topbar">
           <Link href="/" className="brand">
-            oykue
+            zeynepoykuerdem
           </Link>
           <nav className="tabs" aria-label="Pages">
             <Link href="/">Home</Link>

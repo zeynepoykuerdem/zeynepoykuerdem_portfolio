@@ -60,7 +60,7 @@ export default async function Home() {
           )}
         </div>
         <h1 className="name">Öykü Erdem</h1>
-        <p className="muted">@oykue</p>
+        <p className="muted">@zeynepoykuerdem</p>
         <p>{headline}</p>
         <p className="muted">Heidelberg, Germany</p>
         <p className="muted">Co-founder, NexTex AI</p>
