@@ -119,14 +119,42 @@ a { color: var(--link); }
 .empty { color: var(--muted); }
 
 /* Blog calendar */
-.next-dates { margin: 0 0 16px; padding-left: 18px; color: var(--fg); }
-.cal-months { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
-.calendar h3 { margin: 0 0 8px; font-size: 16px; }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 13px; }
-.cal-head { color: var(--muted); padding: 4px 0; }
-.cal-day { padding: 6px 0; border-radius: 6px; color: var(--muted); }
-.cal-day.post { background: var(--link); color: #fff; font-weight: 600; }
-.cal-day.today { outline: 1px solid var(--green); outline-offset: -1px; color: var(--fg); }
+.card.cal-card { padding: 32px; }
+.card .cal-label {
+  margin: 0 0 20px;
+  font: 400 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.card .cal-legend { margin: 28px 0 0; }
+.cal-months { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 40px; }
+.card .calendar h3 { margin: 0 0 12px; font-size: 20px; font-weight: 700; }
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  text-align: center;
+  font: 400 14px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.cal-head { color: var(--muted); padding: 4px 0 6px; }
+.cal-day {
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+}
+.cal-day.today { border-color: var(--link); }
+.cal-day.post { border-color: var(--green); color: var(--green); font-weight: 700; }
+.cal-day.published { background: var(--green); border-color: var(--green); color: var(--bg); font-weight: 700; }
+
+@media (max-width: 720px) {
+  .card.cal-card { padding: 20px 16px; }
+  .cal-grid { gap: 4px; font-size: 13px; }
+}
 
 /* Forms (admin) */
 .narrow { max-width: 420px; }

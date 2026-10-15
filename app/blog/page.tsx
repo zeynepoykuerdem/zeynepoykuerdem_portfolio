@@ -21,40 +21,33 @@ export default async function Blog() {
   const posts = (error ? [] : data ?? []) as Post[];
 
   const now = new Date();
-  const upcoming = upcomingPostDates(now, 26); // about a year of post days
-  const marked = new Set(upcoming.map(dayKey));
-  const today = dayKey(now);
+  const thisMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   const nextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+  // Start from the 1st so post days earlier this month stay marked.
+  const marked = new Set(upcomingPostDates(thisMonth, 6).map(dayKey));
+  const published = new Set(posts.map((p) => dayKey(new Date(p.created_at))));
+  const today = dayKey(now);
 
   return (
     <div>
       <h1>Blog</h1>
-      <p className="muted">Build notes and decisions, published every other Friday.</p>
+      <p className="muted">Notes from the build: decisions, failures, and what I&apos;d do differently.</p>
 
-      <section className="card">
-        <h2>Next post days</h2>
-        <ul className="next-dates">
-          {upcomingPostDates(now, 3).map((d) => (
-            <li key={dayKey(d)}>
-              {d.toLocaleDateString("en-GB", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-                timeZone: "UTC",
-              })}
-            </li>
-          ))}
-        </ul>
+      <section className="card cal-card">
+        <p className="cal-label">Blog calendar · every other Friday</p>
         <div className="cal-months">
-          <Calendar year={now.getUTCFullYear()} month={now.getUTCMonth()} marked={marked} today={today} />
-          <Calendar
-            year={nextMonth.getUTCFullYear()}
-            month={nextMonth.getUTCMonth()}
-            marked={marked}
-            today={today}
-          />
+          {[thisMonth, nextMonth].map((m) => (
+            <Calendar
+              key={dayKey(m)}
+              year={m.getUTCFullYear()}
+              month={m.getUTCMonth()}
+              marked={marked}
+              published={published}
+              today={today}
+            />
+          ))}
         </div>
+        <p className="cal-label cal-legend">Outlined = post day · filled = published</p>
       </section>
 
       {posts.length === 0 ? (
