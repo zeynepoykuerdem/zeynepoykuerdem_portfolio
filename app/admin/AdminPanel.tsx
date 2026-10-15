@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { CloudNotesEditor, McpNotesEditor } from "./NotesEditor";
 
 type Post = {
   id: string;
@@ -522,6 +523,9 @@ export default function AdminPanel() {
           <ProjectEditor initial={EMPTY_PROJECT} submitLabel="Add project" onSave={addProject} />
         </div>
       </section>
+
+      <CloudNotesEditor />
+      <McpNotesEditor />
 
       <section className="card">
         <h2>Now page</h2>
