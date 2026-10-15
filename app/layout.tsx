@@ -19,6 +19,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <nav className="tabs" aria-label="Pages">
             <Link href="/">Home</Link>
             <Link href="/blog">Blog</Link>
+            <Link href="/cloud">Cloud notes</Link>
+            <Link href="/nextex-mcp">NexTex MCP</Link>
+            <Link href="/now">Now</Link>
+            <Link href="/developers">For developers</Link>
           </nav>
         </header>
         <main className="wrap">{children}</main>
