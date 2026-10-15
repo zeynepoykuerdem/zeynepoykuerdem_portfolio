@@ -328,6 +328,21 @@ h3 {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.entry.post {
+  margin-top: 16px;
+}
+.entry.post .body {
+  font-size: 15px;
+  line-height: 1.65;
+}
+.post-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
 .meta-row {
   display: flex;
   flex-wrap: wrap;
