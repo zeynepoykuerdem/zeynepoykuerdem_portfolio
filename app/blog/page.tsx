@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { shortDate } from "@/lib/format";
 import { berlinDayKey, dayKey, upcomingPostDates } from "@/lib/schedule";
 import Calendar from "./Calendar";
 
@@ -10,12 +11,18 @@ type Post = {
   body: string;
   created_at: string;
   published_at: string | null;
+  image_url: string | null;
 };
+
+// Post images come from the media bucket; only show absolute https URLs.
+function safeImage(url: string | null): string | null {
+  return url && /^https:\/\//.test(url) ? url : null;
+}
 
 export default async function Blog() {
   const { data, error } = await supabase
     .from("posts")
-    .select("id, title, body, created_at, published_at")
+    .select("id, title, body, created_at, published_at, image_url")
     .eq("published", true)
     .order("published_at", { ascending: false, nullsFirst: false });
 
@@ -32,7 +39,7 @@ export default async function Blog() {
   return (
     <div>
       <h1>Blog</h1>
-      <p className="muted">Notes from the build: decisions, failures, and what I&apos;d do differently.</p>
+      <p className="lead">Notes from the build: decisions, failures, and what I&apos;d do differently.</p>
 
       <section className="card cal-card">
         <p className="cal-label">Blog calendar · every other Friday</p>
@@ -52,24 +59,27 @@ export default async function Blog() {
       </section>
 
       {posts.length === 0 ? (
-        <p className="empty">No posts yet. The first one is on the way.</p>
+        <div className="empty-box">No posts yet. The first one is on the way.</div>
       ) : (
-        posts.map((post) => (
-          <article className="card" key={post.id}>
-            <h2>{post.title}</h2>
-            <p className="muted">
-              {new Date(post.published_at ?? post.created_at).toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-                timeZone: "Europe/Berlin",
-              })}
-            </p>
-            <p className="post-body" style={{ marginTop: 8 }}>
-              {post.body}
-            </p>
-          </article>
-        ))
+        posts.map((post) => {
+          const image = safeImage(post.image_url);
+          return (
+            <article className="entry post" key={post.id}>
+              <div className="entry-head">
+                <h3>{post.title}</h3>
+                <div className="meta-row">
+                  <span className="pill">Published</span>
+                  <span className="mono-label">{shortDate(post.published_at ?? post.created_at)}</span>
+                </div>
+              </div>
+              {image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="post-image" src={image} alt="" loading="lazy" />
+              ) : null}
+              <p className="body">{post.body}</p>
+            </article>
+          );
+        })
       )}
     </div>
   );
