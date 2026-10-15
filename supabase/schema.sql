@@ -97,7 +97,8 @@ insert into storage.buckets (id, name, public)
 values ('media', 'media', true)
 on conflict (id) do nothing;
 
-create policy "media is public" on storage.objects for select using (bucket_id = 'media');
+-- The bucket is public, so files open by URL without a select policy. Only admins may list them.
+create policy "admins read media" on storage.objects for select using (bucket_id = 'media' and public.is_admin());
 create policy "admins upload media" on storage.objects for insert with check (bucket_id = 'media' and public.is_admin());
 create policy "admins update media" on storage.objects for update using (bucket_id = 'media' and public.is_admin());
 create policy "admins delete media" on storage.objects for delete using (bucket_id = 'media' and public.is_admin());
