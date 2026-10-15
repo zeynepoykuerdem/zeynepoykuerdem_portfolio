@@ -942,6 +942,72 @@ button.danger {
   font-size: 16px;
 }
 
+/* Admin layout: one readable column, pill tabs, collapsible projects */
+.admin {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.admin .card {
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.admin .card h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+.admin form {
+  gap: 14px;
+}
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  margin: 8px 0 16px;
+  padding: 4px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.admin-tabs button {
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  font: 500 14px var(--sans);
+  color: var(--fg);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+}
+.admin-tabs button:hover {
+  background: var(--panel-2);
+  filter: none;
+}
+.admin-tabs button.active {
+  background: var(--panel-2);
+  color: var(--link);
+  font-weight: 600;
+}
+details.project-item > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+}
+details.project-item > summary::-webkit-details-marker {
+  display: none;
+}
+details.project-item > summary::before {
+  content: "▸";
+  color: var(--muted);
+  transition: transform 0.15s;
+}
+details.project-item[open] > summary::before {
+  transform: rotate(90deg);
+}
+details.project-item[open] > summary {
+  margin-bottom: 12px;
+}
+
 @media (max-width: 720px) {
   .side-layout {
     grid-template-columns: 1fr;

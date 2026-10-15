@@ -203,8 +203,43 @@ function selectedFile(form: HTMLFormElement): File | null {
   return input?.files?.[0] ?? null;
 }
 
+const TABS = [
+  { id: "posts", label: "Posts" },
+  { id: "projects", label: "Projects" },
+  { id: "cloud", label: "Cloud notes" },
+  { id: "mcp", label: "MCP notes" },
+  { id: "profile", label: "Profile" },
+  { id: "now", label: "Now" },
+  { id: "newsletter", label: "Newsletter" },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
+
+const TAB_KEY = "admin-tab";
+
 export default function AdminPanel() {
+  const [tab, setTab] = useState<TabId>("posts");
   const [status, setStatus] = useState<Status>(null);
+
+  // Reopen the tab used last time. Storage can be unavailable (private windows), so it is optional.
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(TAB_KEY);
+      if (saved && TABS.some((t) => t.id === saved)) setTab(saved as TabId);
+    } catch {
+      // keep the default tab
+    }
+  }, []);
+
+  function openTab(id: TabId) {
+    setTab(id);
+    setStatus(null);
+    try {
+      window.localStorage.setItem(TAB_KEY, id);
+    } catch {
+      // not remembered, which is fine
+    }
+  }
   const [profile, setProfile] = useState({ headline: "", bio: "", status: "" });
   const [nowBody, setNowBody] = useState("");
   const [posts, setPosts] = useState<Post[]>([]);
@@ -397,12 +432,28 @@ export default function AdminPanel() {
         </button>
       </div>
 
+      <nav className="admin-tabs" aria-label="Admin sections">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            className={tab === t.id ? "active" : undefined}
+            aria-current={tab === t.id ? "page" : undefined}
+            onClick={() => openTab(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
+      </nav>
+
       {status ? (
         <p className={status.error ? "status error" : "status"} role="status">
           {status.text}
         </p>
       ) : null}
 
+      {/* Every section stays mounted and is only hidden, so unsaved input survives a tab switch. */}
+      <div hidden={tab !== "profile"}>
       <section className="card">
         <h2>Profile</h2>
         <form onSubmit={saveProfile}>
@@ -447,7 +498,9 @@ export default function AdminPanel() {
           <button type="submit">Upload photo</button>
         </form>
       </section>
+      </div>
 
+      <div hidden={tab !== "posts"}>
       <section className="card">
         <h2>New post</h2>
         <form onSubmit={savePost}>
@@ -505,30 +558,47 @@ export default function AdminPanel() {
           </div>
         ))}
       </section>
+      </div>
 
+      <div hidden={tab !== "projects"}>
       <section className="card">
         <h2>Projects</h2>
+        <p className="muted">Click a project to edit it.</p>
         {projects.length === 0 ? <p className="muted">No projects yet.</p> : null}
         {projects.map((project) => (
-          <div className="project-item" key={project.id}>
+          <details className="project-item" key={project.id}>
+            <summary>
+              <strong>{project.name}</strong>
+              {project.label ? <span className="tag">{project.label}</span> : null}
+            </summary>
             <ProjectEditor
               initial={project}
               submitLabel="Save project"
               onSave={(input) => updateProject(project.id, input)}
               onDelete={() => deleteProject(project)}
             />
-          </div>
+          </details>
         ))}
-        <div className="project-item">
-          <h3>Add a project</h3>
+        <details className="project-item">
+          <summary>
+            <strong>+ Add a project</strong>
+          </summary>
           <ProjectEditor initial={EMPTY_PROJECT} submitLabel="Add project" onSave={addProject} />
-        </div>
+        </details>
       </section>
+      </div>
 
-      <CloudNotesEditor />
-      <McpNotesEditor />
-      <NewsletterEditor />
+      <div hidden={tab !== "cloud"}>
+        <CloudNotesEditor />
+      </div>
+      <div hidden={tab !== "mcp"}>
+        <McpNotesEditor />
+      </div>
+      <div hidden={tab !== "newsletter"}>
+        <NewsletterEditor />
+      </div>
 
+      <div hidden={tab !== "now"}>
       <section className="card">
         <h2>Now page</h2>
         <form onSubmit={saveNow}>
@@ -544,6 +614,7 @@ export default function AdminPanel() {
           <button type="submit">Save Now page</button>
         </form>
       </section>
+      </div>
     </div>
   );
 }
