@@ -15,36 +15,35 @@ const DEFAULT_HEADLINE =
 const DEFAULT_BIO =
   "I work across computer vision, backend services, and the edge devices that connect them. Right now I'm a co-founder and backend engineer at NexTex AI in Heidelberg.";
 
-// Projects are static for now. They move to the database in a later step.
-const PROJECTS = [
-  {
-    name: "NexTex AI",
-    summary:
-      "Camera-based defect detection for circular knitting machines. Edge devices run inference and send results to a cloud backend.",
-    stack: ["FastAPI", "RabbitMQ", "MinIO", "Raspberry Pi 5"],
-  },
-  {
-    name: "Studiee AI",
-    summary:
-      "An AI-powered student performance platform, built independently from idea to working product.",
-    stack: ["Next.js", "Supabase", "Vercel"],
-  },
-  {
-    name: "Explainable AI thesis",
-    summary:
-      "Grad-CAM vs. Integrated Gradients, and how model memorization affects explanations.",
-    stack: ["PyTorch", "Grad-CAM"],
-  },
-];
+type Project = {
+  id: string;
+  name: string;
+  summary: string;
+  stack: string[];
+  github_url: string | null;
+};
+
+// Only link to absolute https URLs; anything else is shown as plain text.
+function safeUrl(url: string | null): string | null {
+  return url && /^https:\/\//.test(url) ? url : null;
+}
 
 export default async function Home() {
-  const { data, error } = await supabase
-    .from("profile")
-    .select("headline, bio, status, avatar_url")
-    .eq("id", 1)
-    .maybeSingle<Profile>();
+  const [profileRes, projectsRes] = await Promise.all([
+    supabase
+      .from("profile")
+      .select("headline, bio, status, avatar_url")
+      .eq("id", 1)
+      .maybeSingle<Profile>(),
+    supabase
+      .from("projects")
+      .select("id, name, summary, stack, github_url")
+      .order("sort_order", { ascending: true })
+      .order("name", { ascending: true }),
+  ]);
 
-  const profile: Profile | null = error ? null : data;
+  const profile: Profile | null = profileRes.error ? null : profileRes.data;
+  const projects = (projectsRes.error ? [] : projectsRes.data ?? []) as Project[];
   const headline = profile?.headline || DEFAULT_HEADLINE;
   const bio = profile?.bio || DEFAULT_BIO;
 
@@ -76,27 +75,33 @@ export default async function Home() {
 
         <section>
           <h2>Projects</h2>
-          {PROJECTS.map((p) => (
-            <article className="card" key={p.name}>
-              <h3>
-                <a
-                  href="https://github.com/zeynepoykuerdem"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {p.name}
-                </a>
-              </h3>
-              <p>{p.summary}</p>
-              <div style={{ marginTop: 8 }}>
-                {p.stack.map((s) => (
-                  <span className="tag" key={s}>
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </article>
-          ))}
+          {projects.length === 0 ? <p className="empty">Projects are on the way.</p> : null}
+          {projects.map((p) => {
+            const url = safeUrl(p.github_url);
+            return (
+              <article className="card" key={p.id}>
+                <h3>
+                  {url ? (
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                      {p.name}
+                    </a>
+                  ) : (
+                    p.name
+                  )}
+                </h3>
+                <p>{p.summary}</p>
+                {p.stack.length > 0 ? (
+                  <div style={{ marginTop: 8 }}>
+                    {p.stack.map((s) => (
+                      <span className="tag" key={s}>
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </article>
+            );
+          })}
         </section>
       </div>
     </div>
