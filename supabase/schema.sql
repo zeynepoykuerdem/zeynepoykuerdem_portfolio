@@ -87,7 +87,16 @@ create table if not exists public.projects (
   summary text not null default '',
   stack text[] not null default '{}',
   github_url text,
-  sort_order int not null default 0
+  sort_order int not null default 0,
+  -- Pinned card details on the home page: label ("Computer vision"), icon (camera, book, chart),
+  -- and a highlighted note shown as "<note_label>: <note>".
+  label text not null default '',
+  icon text not null default '',
+  note_label text not null default '',
+  note text not null default '',
+  -- Architecture diagram: ordered steps like [{"name": "Edge device", "detail": "inference"}]
+  pipeline jsonb not null default '[]'::jsonb
+    constraint projects_pipeline_is_array check (jsonb_typeof(pipeline) = 'array')
 );
 
 -- ---------- Row-level security ----------

@@ -19,13 +19,50 @@ type Project = {
   stack: string[];
   github_url: string | null;
   sort_order: number;
+  label: string;
+  icon: string;
+  note_label: string;
+  note: string;
+  pipeline: PipelineStep[];
 };
+
+type PipelineStep = { name: string; detail?: string };
 
 type ProjectInput = Omit<Project, "id">;
 
 type Status = { text: string; error: boolean } | null;
 
-const EMPTY_PROJECT: ProjectInput = { name: "", summary: "", stack: [], github_url: null, sort_order: 0 };
+const PROJECT_COLUMNS =
+  "id, name, summary, stack, github_url, sort_order, label, icon, note_label, note, pipeline";
+
+// The diagram steps are edited as text, one step per line: "Edge device | inference".
+function pipelineToText(steps: PipelineStep[]): string {
+  return steps.map((s) => (s.detail ? `${s.name} | ${s.detail}` : s.name)).join("\n");
+}
+
+function textToPipeline(text: string): PipelineStep[] {
+  return text
+    .split("\n")
+    .map((line) => {
+      const [name, ...rest] = line.split("|");
+      const detail = rest.join("|").trim();
+      return detail ? { name: name.trim(), detail } : { name: name.trim() };
+    })
+    .filter((s) => s.name);
+}
+
+const EMPTY_PROJECT: ProjectInput = {
+  name: "",
+  summary: "",
+  stack: [],
+  github_url: null,
+  sort_order: 0,
+  label: "",
+  icon: "",
+  note_label: "",
+  note: "",
+  pipeline: [],
+};
 
 // One project as an editable form. Used for existing projects and for the "add" form.
 function ProjectEditor({
@@ -44,6 +81,11 @@ function ProjectEditor({
   const [stack, setStack] = useState(initial.stack.join(", "));
   const [url, setUrl] = useState(initial.github_url ?? "");
   const [order, setOrder] = useState(String(initial.sort_order));
+  const [label, setLabel] = useState(initial.label);
+  const [icon, setIcon] = useState(initial.icon);
+  const [noteLabel, setNoteLabel] = useState(initial.note_label);
+  const [note, setNote] = useState(initial.note);
+  const [pipeline, setPipeline] = useState(pipelineToText(initial.pipeline ?? []));
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -56,6 +98,11 @@ function ProjectEditor({
         .filter(Boolean),
       github_url: url.trim() || null,
       sort_order: Number.parseInt(order, 10) || 0,
+      label: label.trim(),
+      icon,
+      note_label: noteLabel.trim(),
+      note: note.trim(),
+      pipeline: textToPipeline(pipeline),
     });
     // The add form starts over after a save; existing projects keep their values.
     if (saved && !onDelete) {
@@ -64,6 +111,11 @@ function ProjectEditor({
       setStack("");
       setUrl("");
       setOrder("0");
+      setLabel("");
+      setIcon("");
+      setNoteLabel("");
+      setNote("");
+      setPipeline("");
     }
   }
 
@@ -88,6 +140,31 @@ function ProjectEditor({
       <label>
         Order (lower comes first)
         <input type="text" inputMode="numeric" maxLength={4} value={order} onChange={(e) => setOrder(e.target.value)} />
+      </label>
+      <label>
+        Label on the card (optional, e.g. &quot;Computer vision&quot;)
+        <input type="text" maxLength={60} value={label} onChange={(e) => setLabel(e.target.value)} />
+      </label>
+      <label>
+        Icon
+        <select value={icon} onChange={(e) => setIcon(e.target.value)}>
+          <option value="">None</option>
+          <option value="camera">Camera</option>
+          <option value="book">Book</option>
+          <option value="chart">Chart</option>
+        </select>
+      </label>
+      <label>
+        Note heading (optional, e.g. &quot;Status&quot; or &quot;Question&quot;)
+        <input type="text" maxLength={40} value={noteLabel} onChange={(e) => setNoteLabel(e.target.value)} />
+      </label>
+      <label>
+        Note (optional, shown in a highlighted box)
+        <textarea rows={2} maxLength={300} value={note} onChange={(e) => setNote(e.target.value)} />
+      </label>
+      <label>
+        Architecture diagram (optional; one step per line, detail after a |, e.g. &quot;Edge device | inference&quot;)
+        <textarea rows={4} maxLength={600} value={pipeline} onChange={(e) => setPipeline(e.target.value)} />
       </label>
       <div className="row-actions">
         <button type="submit">{submitLabel}</button>
@@ -152,7 +229,7 @@ export default function AdminPanel() {
         .order("created_at", { ascending: false }),
       supabase
         .from("projects")
-        .select("id, name, summary, stack, github_url, sort_order")
+        .select(PROJECT_COLUMNS)
         .order("sort_order", { ascending: true })
         .order("name", { ascending: true }),
     ]);
@@ -264,7 +341,7 @@ export default function AdminPanel() {
     const { data, error } = await supabase
       .from("projects")
       .insert(input)
-      .select("id, name, summary, stack, github_url, sort_order")
+      .select(PROJECT_COLUMNS)
       .single();
     if (error) {
       note(errMsg(error), true);
