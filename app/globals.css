@@ -196,6 +196,8 @@ button.danger { color: #f85149; }
 .status.error { color: #f85149; }
 .row-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
 .row-actions { display: flex; gap: 8px; }
+.project-item { padding: 12px 0; border-top: 1px solid var(--line); }
+.project-item h3 { margin: 0 0 4px; font-size: 16px; }
 
 @media (max-width: 720px) {
   .side-layout { grid-template-columns: 1fr; }

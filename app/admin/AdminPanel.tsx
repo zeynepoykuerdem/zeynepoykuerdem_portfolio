@@ -12,7 +12,94 @@ type Post = {
   image_url: string | null;
 };
 
+type Project = {
+  id: string;
+  name: string;
+  summary: string;
+  stack: string[];
+  github_url: string | null;
+  sort_order: number;
+};
+
+type ProjectInput = Omit<Project, "id">;
+
 type Status = { text: string; error: boolean } | null;
+
+const EMPTY_PROJECT: ProjectInput = { name: "", summary: "", stack: [], github_url: null, sort_order: 0 };
+
+// One project as an editable form. Used for existing projects and for the "add" form.
+function ProjectEditor({
+  initial,
+  submitLabel,
+  onSave,
+  onDelete,
+}: {
+  initial: ProjectInput;
+  submitLabel: string;
+  onSave: (input: ProjectInput) => Promise<boolean>;
+  onDelete?: () => void;
+}) {
+  const [name, setName] = useState(initial.name);
+  const [summary, setSummary] = useState(initial.summary);
+  const [stack, setStack] = useState(initial.stack.join(", "));
+  const [url, setUrl] = useState(initial.github_url ?? "");
+  const [order, setOrder] = useState(String(initial.sort_order));
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    const saved = await onSave({
+      name: name.trim(),
+      summary: summary.trim(),
+      stack: stack
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      github_url: url.trim() || null,
+      sort_order: Number.parseInt(order, 10) || 0,
+    });
+    // The add form starts over after a save; existing projects keep their values.
+    if (saved && !onDelete) {
+      setName("");
+      setSummary("");
+      setStack("");
+      setUrl("");
+      setOrder("0");
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className="project-form">
+      <label>
+        Name
+        <input type="text" required maxLength={120} value={name} onChange={(e) => setName(e.target.value)} />
+      </label>
+      <label>
+        Summary
+        <textarea rows={3} maxLength={500} value={summary} onChange={(e) => setSummary(e.target.value)} />
+      </label>
+      <label>
+        Stack (comma-separated)
+        <input type="text" maxLength={300} value={stack} onChange={(e) => setStack(e.target.value)} />
+      </label>
+      <label>
+        Repository URL (optional, must start with https://)
+        <input type="text" maxLength={300} value={url} onChange={(e) => setUrl(e.target.value)} />
+      </label>
+      <label>
+        Order (lower comes first)
+        <input type="text" inputMode="numeric" maxLength={4} value={order} onChange={(e) => setOrder(e.target.value)} />
+      </label>
+      <div className="row-actions">
+        <button type="submit">{submitLabel}</button>
+        {onDelete ? (
+          <button type="button" className="ghost danger" onClick={onDelete}>
+            Delete
+          </button>
+        ) : null}
+      </div>
+    </form>
+  );
+}
 
 function errMsg(err: unknown): string {
   if (typeof err === "object" && err !== null && "message" in err) {
@@ -43,6 +130,7 @@ export default function AdminPanel() {
   const [nowBody, setNowBody] = useState("");
   const [posts, setPosts] = useState<Post[]>([]);
   const [postForm, setPostForm] = useState({ title: "", body: "", published: false });
+  const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
     load();
@@ -55,13 +143,18 @@ export default function AdminPanel() {
   }
 
   async function load() {
-    const [profileRes, nowRes, postsRes] = await Promise.all([
+    const [profileRes, nowRes, postsRes, projectsRes] = await Promise.all([
       supabase.from("profile").select("headline, bio, status").eq("id", 1).maybeSingle(),
       supabase.from("now_page").select("body").eq("id", 1).maybeSingle(),
       supabase
         .from("posts")
         .select("id, title, body, published, created_at, image_url")
         .order("created_at", { ascending: false }),
+      supabase
+        .from("projects")
+        .select("id, name, summary, stack, github_url, sort_order")
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true }),
     ]);
     if (profileRes.data) {
       setProfile({
@@ -72,7 +165,8 @@ export default function AdminPanel() {
     }
     if (nowRes.data) setNowBody(nowRes.data.body ?? "");
     if (postsRes.data) setPosts(postsRes.data as Post[]);
-    if (profileRes.error || nowRes.error || postsRes.error) {
+    if (projectsRes.data) setProjects(projectsRes.data as Project[]);
+    if (profileRes.error || nowRes.error || postsRes.error || projectsRes.error) {
       note("Could not load everything. Check that your account is listed in the admins table.", true);
     }
   }
@@ -151,6 +245,54 @@ export default function AdminPanel() {
     if (error) return note(errMsg(error), true);
     setPosts(posts.filter((p) => p.id !== post.id));
     note("Post deleted.");
+  }
+
+  function invalidUrl(input: ProjectInput): boolean {
+    if (input.github_url && !/^https:\/\//.test(input.github_url)) {
+      note("The repository URL must start with https://", true);
+      return true;
+    }
+    return false;
+  }
+
+  function sortProjects(list: Project[]): Project[] {
+    return [...list].sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name));
+  }
+
+  async function addProject(input: ProjectInput): Promise<boolean> {
+    if (invalidUrl(input)) return false;
+    const { data, error } = await supabase
+      .from("projects")
+      .insert(input)
+      .select("id, name, summary, stack, github_url, sort_order")
+      .single();
+    if (error) {
+      note(errMsg(error), true);
+      return false;
+    }
+    setProjects(sortProjects([...projects, data as Project]));
+    note("Project added.");
+    return true;
+  }
+
+  async function updateProject(id: string, input: ProjectInput): Promise<boolean> {
+    if (invalidUrl(input)) return false;
+    const { error } = await supabase.from("projects").update(input).eq("id", id);
+    if (error) {
+      note(errMsg(error), true);
+      return false;
+    }
+    setProjects(sortProjects(projects.map((p) => (p.id === id ? { id, ...input } : p))));
+    note("Project saved.");
+    return true;
+  }
+
+  async function deleteProject(project: Project) {
+    if (!window.confirm(`Delete "${project.name}"? This cannot be undone.`)) return;
+    const { error } = await supabase.from("projects").delete().eq("id", project.id);
+    if (error) return note(errMsg(error), true);
+    setProjects(projects.filter((p) => p.id !== project.id));
+    note("Project deleted.");
   }
 
   async function saveNow(e: FormEvent) {
@@ -283,6 +425,25 @@ export default function AdminPanel() {
             </div>
           </div>
         ))}
+      </section>
+
+      <section className="card">
+        <h2>Projects</h2>
+        {projects.length === 0 ? <p className="muted">No projects yet.</p> : null}
+        {projects.map((project) => (
+          <div className="project-item" key={project.id}>
+            <ProjectEditor
+              initial={project}
+              submitLabel="Save project"
+              onSave={(input) => updateProject(project.id, input)}
+              onDelete={() => deleteProject(project)}
+            />
+          </div>
+        ))}
+        <div className="project-item">
+          <h3>Add a project</h3>
+          <ProjectEditor initial={EMPTY_PROJECT} submitLabel="Add project" onSave={addProject} />
+        </div>
       </section>
 
       <section className="card">
