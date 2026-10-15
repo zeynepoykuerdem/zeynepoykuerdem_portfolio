@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { CloudNotesEditor, McpNotesEditor } from "./NotesEditor";
+import NewsletterEditor from "./NewsletterEditor";
 
 type Post = {
   id: string;
@@ -526,6 +527,7 @@ export default function AdminPanel() {
 
       <CloudNotesEditor />
       <McpNotesEditor />
+      <NewsletterEditor />
 
       <section className="card">
         <h2>Now page</h2>
