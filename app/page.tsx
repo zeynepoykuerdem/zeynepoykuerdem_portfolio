@@ -36,8 +36,10 @@ const DEFAULT_BIO =
 
 // Static home page sections from the prototype. Edit here to change them.
 const BUILD_LOG: { when: string; state: "planned" | "done"; text: string }[] = [
-  { when: "Oct 2026", state: "planned", text: "First post: the thesis, explained without the math." },
+  { when: "Oct 2026", state: "planned", text: "Next post: the thesis, explained without the math." },
   { when: "Oct 2026", state: "planned", text: "Studiee AI case study: architecture and key decisions." },
+  { when: "Oct 2026", state: "done", text: "First post: the AI Act's first move is about monitoring, not fines." },
+  { when: "Oct 2026", state: "done", text: "Released this site (v1.0.0): Next.js, Supabase, and a post every other Friday." },
   { when: "Sep 2026", state: "done", text: "Remote field pilot of the NexTex edge devices." },
 ];
 
