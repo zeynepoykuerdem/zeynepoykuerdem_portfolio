@@ -7,6 +7,7 @@ import NewsletterEditor from "./NewsletterEditor";
 
 type Post = {
   id: string;
+  slug: string;
   title: string;
   body: string;
   published: boolean;
@@ -262,7 +263,7 @@ export default function AdminPanel() {
       supabase.from("now_page").select("body").eq("id", 1).maybeSingle(),
       supabase
         .from("posts")
-        .select("id, title, body, published, created_at, image_url")
+        .select("id, slug, title, body, published, created_at, image_url")
         .order("created_at", { ascending: false }),
       supabase
         .from("projects")
@@ -332,7 +333,7 @@ export default function AdminPanel() {
           published: postForm.published,
           image_url: imageUrl,
         })
-        .select("id, title, body, published, created_at, image_url")
+        .select("id, slug, title, body, published, created_at, image_url")
         .single();
       if (error) throw error;
       setPosts([data as Post, ...posts]);
@@ -546,6 +547,14 @@ export default function AdminPanel() {
             <div>
               <strong>{post.title}</strong>{" "}
               <span className="tag">{post.published ? "published" : "draft"}</span>
+              {/* The post's own address, to copy for LinkedIn. Drafts are not public yet. */}
+              {post.published ? (
+                <div className="post-link">
+                  <a href={`/blog/${post.slug}`} target="_blank" rel="noopener noreferrer">
+                    zeynepoykuerdem.dev/blog/{post.slug}
+                  </a>
+                </div>
+              ) : null}
             </div>
             <div className="row-actions">
               <button type="button" className="ghost" onClick={() => togglePublish(post)}>
