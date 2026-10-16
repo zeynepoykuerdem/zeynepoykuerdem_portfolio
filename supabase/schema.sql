@@ -35,7 +35,9 @@ create table if not exists public.posts (
   image_url text,
   published boolean not null default false,
   published_at timestamptz,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  -- Address of the post page, /blog/<slug>. Set by posts_set_slug below; never changes on its own.
+  slug text not null unique
 );
 
 -- Sets published_at when a post goes live and clears it when it is unpublished,
@@ -58,6 +60,53 @@ drop trigger if exists posts_set_published_at on public.posts;
 create trigger posts_set_published_at
   before insert or update of published on public.posts
   for each row execute function public.set_published_at();
+
+-- Builds a post's slug from its title when it has none (on insert, or when cleared).
+create or replace function public.slugify(t text)
+returns text
+language sql
+immutable
+as $$
+  select trim(both '-' from left(
+    trim(both '-' from regexp_replace(
+      translate(replace(regexp_replace(lower(coalesce(t, '')), '[''’]', '', 'g'), 'ß', 'ss'),
+                'çğıöşüäëéèêâàîïôûùÿ', 'cgiosuaeeeeaaiiouuy'),
+      '[^a-z0-9]+', '-', 'g')),
+    80));
+$$;
+
+create or replace function public.unique_post_slug(base text, post_id uuid)
+returns text
+language plpgsql
+as $$
+declare
+  candidate text := coalesce(nullif(base, ''), 'post-' || left(post_id::text, 7));
+  n int := 1;
+begin
+  while exists (select 1 from public.posts where slug = candidate and id <> post_id) loop
+    n := n + 1;
+    candidate := coalesce(nullif(base, ''), 'post-' || left(post_id::text, 7)) || '-' || n;
+  end loop;
+  return candidate;
+end;
+$$;
+
+create or replace function public.set_post_slug()
+returns trigger
+language plpgsql
+as $$
+begin
+  if new.slug is null or btrim(new.slug) = '' then
+    new.slug := public.unique_post_slug(public.slugify(new.title), new.id);
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists posts_set_slug on public.posts;
+create trigger posts_set_slug
+  before insert or update on public.posts
+  for each row execute function public.set_post_slug();
 
 create table if not exists public.cloud_notes (
   id uuid primary key default gen_random_uuid(),

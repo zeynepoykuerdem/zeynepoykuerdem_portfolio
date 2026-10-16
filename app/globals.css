@@ -372,6 +372,133 @@ h3 {
   text-decoration: none;
   background: #2ea043;
 }
+
+/* Blog index as a git log: terminal heading, vertical line, one "commit" per post */
+.gitlog {
+  margin-top: 24px;
+}
+.terminal {
+  margin: 0 0 16px;
+  font: 400 14px var(--mono);
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+.terminal .prompt {
+  color: var(--green);
+  font-weight: 500;
+}
+.timeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 36px;
+}
+/* The vertical line */
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--line);
+}
+.commit {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 12px 12px 12px 0;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.commit:hover {
+  background: var(--panel);
+}
+/* The dot on the line: outlined, filled for HEAD */
+.commit::before {
+  content: "";
+  position: absolute;
+  left: -34px;
+  top: 16px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--link);
+  border-radius: 50%;
+  background: var(--page);
+  box-sizing: border-box;
+  transition: transform 0.15s;
+}
+.commit.head::before {
+  background: var(--link);
+}
+.commit:hover::before {
+  transform: scale(1.15);
+}
+.commit-text {
+  flex: 1;
+  min-width: 0;
+}
+.commit-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin: 0 0 4px;
+  font: 400 13px var(--mono);
+  color: var(--muted);
+}
+.commit-meta .hash {
+  color: var(--yellow);
+}
+.head-badge {
+  padding: 0 8px;
+  border: 1px solid color-mix(in srgb, var(--link) 50%, transparent);
+  border-radius: 999px;
+  color: var(--link);
+  font-size: 12px;
+}
+.commit-title {
+  margin: 0 0 4px;
+  font: 600 18px/1.35 var(--sans);
+}
+.commit-title a {
+  color: var(--fg);
+}
+.commit-title a:hover {
+  color: var(--link);
+  text-decoration: none;
+}
+/* Makes the whole entry clickable while the title stays the real link. */
+.commit-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+}
+.commit-excerpt {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.commit-thumb {
+  flex: 0 0 auto;
+  width: 120px;
+  aspect-ratio: 1200 / 630;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+.gitlog-pages {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  padding-left: 36px;
+  font: 400 14px var(--mono);
+}
 .meta-row {
   display: flex;
   flex-wrap: wrap;
@@ -933,6 +1060,11 @@ button.danger {
   width: auto;
   padding: 6px 8px;
 }
+.post-link {
+  margin-top: 2px;
+  font: 400 12px var(--mono);
+  overflow-wrap: anywhere;
+}
 .project-item {
   padding: 12px 0;
   border-top: 1px solid var(--line);
@@ -1021,5 +1153,28 @@ details.project-item[open] > summary {
   }
   .activity .when {
     min-width: 0;
+  }
+  /* Timeline on phones: thumbnail goes under the text, line moves closer */
+  .timeline {
+    padding-left: 28px;
+  }
+  .timeline::before {
+    left: 7px;
+  }
+  .commit {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .commit::before {
+    left: -28px;
+    width: 14px;
+    height: 14px;
+  }
+  .commit-thumb {
+    width: 100%;
+    max-width: 320px;
+  }
+  .gitlog-pages {
+    padding-left: 28px;
   }
 }
