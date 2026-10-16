@@ -3,6 +3,7 @@ import { shortDate } from "@/lib/format";
 import { berlinDayKey, dayKey, upcomingPostDates } from "@/lib/schedule";
 import Calendar from "./Calendar";
 import Newsletter from "./Newsletter";
+import LinkedText from "./LinkedText";
 
 export const revalidate = 60;
 
@@ -79,7 +80,9 @@ export default async function Blog() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img className="post-image" src={image} alt="" loading="lazy" />
               ) : null}
-              <p className="body">{post.body}</p>
+              <p className="body">
+                <LinkedText text={post.body} />
+              </p>
             </article>
           );
         })
