@@ -16,11 +16,7 @@ Import this repository in Vercel and add the same two variables, `NEXT_PUBLIC_SU
 
 ### Custom domain
 
-The domain `zeynepoykuerdem.dev` is registered at Cloudflare and points to Vercel:
-
-- Cloudflare DNS: `CNAME @` and `CNAME www` → the target shown in Vercel → Settings → Domains, with the proxy **off** ("DNS only"), so Vercel can issue the HTTPS certificate. `.dev` sites only load over HTTPS.
-- Vercel: `zeynepoykuerdem.dev` is the production domain; `www` redirects to it.
-- Supabase → Authentication → URL Configuration: Site URL `https://zeynepoykuerdem.dev`, and `https://zeynepoykuerdem.dev/admin` in the redirect URLs, so magic links come back to the live site.
+The domain `zeynepoykuerdem.dev` is registered at Cloudflare and points to Vercel
 
 ## Admin
 
