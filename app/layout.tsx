@@ -9,10 +9,23 @@ const plexMono = IBM_Plex_Mono({ subsets: ["latin", "latin-ext"], weight: ["400"
 const caveat = Caveat({ subsets: ["latin", "latin-ext"], weight: ["500"], variable: "--font-hand" });
 const unbounded = Unbounded({ subsets: ["latin", "latin-ext"], weight: ["600"], variable: "--font-display" });
 
+const SITE_URL = "https://zeynepoykuerdem.dev";
+const DESCRIPTION =
+  "AI and full-stack engineer. Explainable AI, edge devices, and the backends that tie them together.";
+
+// metadataBase makes link previews and canonical URLs use the custom domain,
+// not the address of whichever Vercel deployment served the page.
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Öykü Erdem",
-  description:
-    "AI and full-stack engineer. Explainable AI, edge devices, and the backends that tie them together.",
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "Öykü Erdem",
+    title: "Öykü Erdem",
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
