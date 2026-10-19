@@ -3,12 +3,14 @@ const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 type Props = {
   year: number;
   month: number; // 0-based
-  marked: Set<string>; // yyyy-mm-dd keys of post days
-  published: Set<string>; // yyyy-mm-dd keys of days with a published post
+  planned: Set<string>; // yyyy-mm-dd keys of planned days
+  done: Set<string>; // yyyy-mm-dd keys of finished days
   today: string; // yyyy-mm-dd
+  labels: {planned: string; done: string};
+  titles?: Map<string, string>; // yyyy-mm-dd keys to custom titles
 };
 
-export default function Calendar({ year, month, marked, published, today }: Props) {
+export default function Calendar({ year, month, planned, done, today, labels, titles }: Props) {
   const first = new Date(Date.UTC(year, month, 1));
   const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
   // Monday-first: Sunday (0) moves to the end of the week.
@@ -35,18 +37,18 @@ export default function Calendar({ year, month, marked, published, today }: Prop
         {days.map((day, i) => {
           if (day === null) return <div key={`blank-${i}`} />;
           const key = new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10);
-          const isPost = marked.has(key);
-          const isPublished = published.has(key);
+          const isPlanned = planned.has(key);
+          const isDone = done.has(key);
           const isToday = key === today;
           const cls = [
             "cal-day",
-            isPost ? "post" : "",
-            isPublished ? "published" : "",
+            isPlanned ? "planned" : "",
+            isDone ? "done" : "",
             isToday ? "today" : "",
           ]
             .join(" ")
             .trim();
-          const title = isPublished ? "Published" : isPost ? "Post day" : undefined;
+          const title = titles?.get(key) ?? (isDone ? labels.done : isPlanned ? labels.planned : undefined);
           return (
             <div key={key} className={cls} title={title}>
               {day}

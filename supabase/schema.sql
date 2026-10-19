@@ -157,6 +157,17 @@ create table if not exists public.newsletter (
   updated_at timestamptz not null default now()
 );
 
+-- Study calendar on /cloud and /nextex-mcp: one row per planned day and track (seeded in 009).
+create table if not exists public.study_sessions (
+  id uuid primary key default gen_random_uuid(),
+  day date not null,
+  track text not null check (track in ('cloud', 'mcp')),
+  title text not null,
+  done boolean not null default false,
+  created_at timestamptz not null default now(),
+  unique (day, track)
+);
+
 -- ---------- Row-level security ----------
 alter table public.profile enable row level security;
 alter table public.posts enable row level security;
@@ -165,6 +176,7 @@ alter table public.mcp_notes enable row level security;
 alter table public.now_page enable row level security;
 alter table public.projects enable row level security;
 alter table public.newsletter enable row level security;
+alter table public.study_sessions enable row level security;
 
 -- Public read
 create policy "profile is public" on public.profile for select using (true);
@@ -174,6 +186,7 @@ create policy "mcp notes are public" on public.mcp_notes for select using (true)
 create policy "now page is public" on public.now_page for select using (true);
 create policy "projects are public" on public.projects for select using (true);
 create policy "newsletter is public" on public.newsletter for select using (true);
+create policy "study sessions are public" on public.study_sessions for select using (true);
 
 -- Admin write (insert, update, delete)
 create policy "admins write profile" on public.profile for all using (public.is_admin()) with check (public.is_admin());
@@ -183,6 +196,7 @@ create policy "admins write mcp notes" on public.mcp_notes for all using (public
 create policy "admins write now page" on public.now_page for all using (public.is_admin()) with check (public.is_admin());
 create policy "admins write projects" on public.projects for all using (public.is_admin()) with check (public.is_admin());
 create policy "admins write newsletter" on public.newsletter for all using (public.is_admin()) with check (public.is_admin());
+create policy "admins write study sessions" on public.study_sessions for all using (public.is_admin()) with check (public.is_admin());
 
 -- ---------- Images ----------
 insert into storage.buckets (id, name, public)

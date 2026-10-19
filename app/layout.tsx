@@ -1,14 +1,35 @@
 import type { Metadata } from "next";
-import { Caveat, IBM_Plex_Mono, IBM_Plex_Sans, Unbounded } from "next/font/google";
+import {
+  Caveat,
+  IBM_Plex_Mono,
+  IBM_Plex_Sans,
+  Unbounded,
+} from "next/font/google";
 import Link from "next/link";
-import Nav from "./Nav";
+import Nav from "../components/Nav";
 import "./globals.css";
 
 // Fonts from the prototype. Next.js serves them from the site itself, so no request goes to Google.
-const plexSans = IBM_Plex_Sans({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "600"], variable: "--font-sans" });
-const plexMono = IBM_Plex_Mono({ subsets: ["latin", "latin-ext"], weight: ["400", "500"], variable: "--font-mono" });
-const caveat = Caveat({ subsets: ["latin", "latin-ext"], weight: ["500"], variable: "--font-hand" });
-const unbounded = Unbounded({ subsets: ["latin", "latin-ext"], weight: ["600"], variable: "--font-display" });
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
+  variable: "--font-sans",
+});
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
+});
+const caveat = Caveat({
+  subsets: ["latin", "latin-ext"],
+  weight: ["500"],
+  variable: "--font-hand",
+});
+const unbounded = Unbounded({
+  subsets: ["latin", "latin-ext"],
+  weight: ["600"],
+  variable: "--font-display",
+});
 
 const SITE_URL = "https://zeynepoykuerdem.dev";
 const DESCRIPTION =
@@ -29,7 +50,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"
@@ -39,7 +64,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="topbar">
           <div className="topbar-in">
             <div className="crumbs">
-              <a className="owner" href="https://github.com/zeynepoykuerdem" target="_blank" rel="noopener noreferrer">
+              <a
+                className="owner"
+                href="https://github.com/zeynepoykuerdem"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 zeynepoykuerdem
               </a>
               <span className="sep">/</span>
