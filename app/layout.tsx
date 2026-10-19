@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Caveat, IBM_Plex_Mono, IBM_Plex_Sans, Unbounded } from "next/font/google";
+import Link from "next/link";
 import Nav from "./Nav";
 import "./globals.css";
 
@@ -42,9 +43,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 zeynepoykuerdem
               </a>
               <span className="sep">/</span>
-              <a className="repo-name" href="/">
+              <Link className="repo-name" href="/">
                 zeynepoykuerdem_portfolio
-              </a>
+              </Link>
               <span className="badge ok">Public</span>
             </div>
             <span className="badge">open to hybrid roles</span>
