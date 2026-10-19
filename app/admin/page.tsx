@@ -65,7 +65,7 @@ export default function AdminPage() {
     return (
       <section className="card narrow">
         <h1>Admin sign-in</h1>
-        <p className="muted">Enter your email and we'll send you a sign-in link.</p>
+        <p className="muted">Enter your email and we&apos;ll send you a sign-in link.</p>
         <form onSubmit={sendLink}>
           <label>
             Email
@@ -92,7 +92,7 @@ export default function AdminPage() {
       <section className="card narrow">
         <h1>Not an admin</h1>
         <p className="muted">
-          You're signed in as {session.user.email}, but this account isn't in the admins table.
+          You&apos;re signed in as {session.user.email}, but this account isn&apos;t in the admins table.
         </p>
         <p className="muted">
           User id: <code>{session.user.id}</code>

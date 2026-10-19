@@ -13,7 +13,7 @@ export default function CopyEmail() {
       setTimeout(() => {
         setCopied(false);
       }, 2000);
-    } catch (error) {
+    } catch {
       setMessage("Select the address above and copy it.");
     }
   }

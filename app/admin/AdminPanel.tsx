@@ -612,7 +612,7 @@ export default function AdminPanel() {
         <h2>Now page</h2>
         <form onSubmit={saveNow}>
           <label>
-            What I'm working on this month
+            What I&apos;m working on this month
             <textarea
               rows={6}
               maxLength={5000}
