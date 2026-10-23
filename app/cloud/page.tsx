@@ -1,5 +1,13 @@
 import { supabase } from "@/lib/supabase";
 import { shortDate } from "@/lib/format";
+import Calendar from "../../components/Calendar";
+import {
+  berlinDayKey,
+  dayKey,
+  type StudySession,
+  calendarMonths,
+  studyCalendar,
+} from "@/lib/schedule";
 
 export const revalidate = 60;
 
@@ -19,19 +27,54 @@ const DOMAINS = [
 ];
 
 export default async function CloudNotes() {
-  const { data, error } = await supabase
-    .from("cloud_notes")
-    .select("id, domain, title, body, created_at")
-    .order("created_at", { ascending: false });
+  const [cloudNotesRes, studySessionsRes] = await Promise.all([
+    supabase
+      .from("cloud_notes")
+      .select("id, domain, title, body, created_at")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("study_sessions")
+      .select("day,title,done")
+      .eq("track", "cloud"),
+  ]);
 
-  const notes = (error ? [] : data ?? []) as CloudNote[];
+  const notes = (
+    cloudNotesRes.error ? [] : (cloudNotesRes.data ?? [])
+  ) as CloudNote[];
+  const studySessions = (
+    studySessionsRes.error ? [] : (studySessionsRes.data ?? [])
+  ) as StudySession[];
+  const now = new Date();
+  const months = calendarMonths(now);
+  const { planned, done, titles } = studyCalendar(studySessions);
 
   return (
     <div>
       <h1>Cloud architecture notes</h1>
       <p className="lead">
-        Study log for AWS Certified Solutions Architect – Associate (SAA-C03), by exam domain.
+        Study log for AWS Certified Solutions Architect – Associate (SAA-C03),
+        by exam domain.
       </p>
+      <section className="card cal-card">
+        <p className="cal-label">Study Calendar · Cloud </p>
+        <div className="cal-months">
+          {months.map((m) => (
+            <Calendar
+              key={dayKey(m)}
+              year={m.getUTCFullYear()}
+              month={m.getUTCMonth()}
+              planned={planned}
+              done={done}
+              labels={{ planned: "Planned", done: "Done" }}
+              titles={titles}
+              today={berlinDayKey(now)}
+            />
+          ))}
+        </div>
+        <p className="cal-label cal-legend">
+          Outlined = PLANNED · filled = DONE
+        </p>
+      </section>
 
       <ul className="domains" aria-label="Exam domains">
         {DOMAINS.map((d, i) => (
@@ -50,7 +93,9 @@ export default async function CloudNotes() {
             <div className="entry-head">
               <h3>{note.title}</h3>
               <div className="meta-row">
-                {note.domain ? <span className="pill">{note.domain}</span> : null}
+                {note.domain ? (
+                  <span className="pill">{note.domain}</span>
+                ) : null}
                 <span className="mono-label">{shortDate(note.created_at)}</span>
               </div>
             </div>

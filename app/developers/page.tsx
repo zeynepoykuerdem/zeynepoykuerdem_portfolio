@@ -1,5 +1,5 @@
 import Link from "next/link";
-import CopyEmail from "../CopyEmail";
+import CopyEmail from "../../components/CopyEmail";
 
 const AREAS = [
   {
@@ -28,7 +28,9 @@ export default function Developers() {
   return (
     <div>
       <h1>For developers</h1>
-      <p className="lead">What I build, how it is built, and where to look first.</p>
+      <p className="lead">
+        What I build, how it is built, and where to look first.
+      </p>
 
       <div className="cards">
         {AREAS.map((a) => (
@@ -53,7 +55,8 @@ export default function Developers() {
             AWS study notes: <Link href="/cloud">Cloud notes</Link>
           </li>
           <li>
-            Working notes on MCP setup: <Link href="/nextex-mcp">NexTex MCP</Link>
+            Working notes on MCP setup:{" "}
+            <Link href="/nextex-mcp">NexTex MCP</Link>
           </li>
         </ul>
       </div>
@@ -64,7 +67,11 @@ export default function Developers() {
           Send an email to the address below, or copy it.
         </p>
         <div className="contact-row">
-          <a className="mono-label" href="mailto:zeynepoykuerdem@outlook.com" style={{ textTransform: "none" }}>
+          <a
+            className="mono-label"
+            href="mailto:zeynepoykuerdem@outlook.com"
+            style={{ textTransform: "none" }}
+          >
             zeynepoykuerdem@outlook.com
           </a>
           <CopyEmail />

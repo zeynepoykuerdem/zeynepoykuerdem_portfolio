@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import CopyEmail from "./CopyEmail";
+import CopyEmail from "../components/CopyEmail";
 import PipelineDiagram, { type PipelineStep } from "./PipelineDiagram";
 
 // Refresh the content from Supabase at most once a minute.
@@ -36,17 +36,47 @@ const DEFAULT_BIO =
 
 // Static home page sections from the prototype. Edit here to change them.
 const BUILD_LOG: { when: string; state: "planned" | "done"; text: string }[] = [
-  { when: "Oct 2026", state: "planned", text: "Next post: the thesis, explained without the math." },
-  { when: "Oct 2026", state: "planned", text: "Studiee AI case study: architecture and key decisions." },
-  { when: "Oct 2026", state: "done", text: "Post: the AI Act's first move is about monitoring, not fines." },
-  { when: "Oct 2026", state: "done", text: "First post: how I built this site, and what went wrong on the way." },
-  { when: "Oct 2026", state: "done", text: "Released this site (v1.0.0): Next.js, Supabase, and a post every other Friday." },
-  { when: "Sep 2026", state: "done", text: "Remote field pilot of the NexTex edge devices." },
+  {
+    when: "Oct 2026",
+    state: "planned",
+    text: "Next post: the thesis, explained without the math.",
+  },
+  {
+    when: "Oct 2026",
+    state: "planned",
+    text: "Studiee AI case study: architecture and key decisions.",
+  },
+  {
+    when: "Oct 2026",
+    state: "done",
+    text: "Post: the AI Act's first move is about monitoring, not fines.",
+  },
+  {
+    when: "Oct 2026",
+    state: "done",
+    text: "First post: how I built this site, and what went wrong on the way.",
+  },
+  {
+    when: "Oct 2026",
+    state: "done",
+    text: "Released this site (v1.0.0): Next.js, Supabase, and a post every other Friday.",
+  },
+  {
+    when: "Sep 2026",
+    state: "done",
+    text: "Remote field pilot of the NexTex edge devices.",
+  },
 ];
 
 const FOR_FUN = [
-  { title: "Creative crafts", text: "Hands-on making when I'm away from the screen." },
-  { title: "Fitness programming", text: "Training plans I write, test, and adjust." },
+  {
+    title: "Creative crafts",
+    text: "Hands-on making when I'm away from the screen.",
+  },
+  {
+    title: "Fitness programming",
+    text: "Training plans I write, test, and adjust.",
+  },
 ];
 
 const EXPERIENCE = [
@@ -117,7 +147,9 @@ export default async function Home() {
       .maybeSingle<Profile>(),
     supabase
       .from("projects")
-      .select("id, name, summary, stack, github_url, label, icon, note_label, note, pipeline")
+      .select(
+        "id, name, summary, stack, github_url, label, icon, note_label, note, pipeline",
+      )
       .order("sort_order", { ascending: true })
       .order("name", { ascending: true }),
     supabase
@@ -209,7 +241,9 @@ export default async function Home() {
             <div>Co-founder, NexTex AI</div>
             <div>M.Eng. Information Technology (AI), SRH</div>
             <div>
-              <a href="mailto:zeynepoykuerdem@outlook.com">zeynepoykuerdem@outlook.com</a>
+              <a href="mailto:zeynepoykuerdem@outlook.com">
+                zeynepoykuerdem@outlook.com
+              </a>
             </div>
             <div>
               <CopyEmail />
@@ -242,13 +276,22 @@ export default async function Home() {
                 return (
                   <article className="repo" key={p.id}>
                     {ICONS[p.icon] ? (
-                      <svg className="ico" viewBox="0 0 24 24" aria-hidden="true">
+                      <svg
+                        className="ico"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
                         {ICONS[p.icon]}
                       </svg>
                     ) : null}
                     {/* The whole card is clickable when the project has a repository. */}
                     {url ? (
-                      <a className="stretch" href={url} target="_blank" rel="noopener noreferrer">
+                      <a
+                        className="stretch"
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <span className="sr">{p.name} on GitHub</span>
                       </a>
                     ) : null}
@@ -264,7 +307,9 @@ export default async function Home() {
                       <div className="foot">
                         {p.stack.map((s) => (
                           <span key={s}>
-                            {LANGUAGE_DOTS[s] ? <span className={`dot ${LANGUAGE_DOTS[s]}`} /> : null}
+                            {LANGUAGE_DOTS[s] ? (
+                              <span className={`dot ${LANGUAGE_DOTS[s]}`} />
+                            ) : null}
                             {s}
                           </span>
                         ))}
@@ -283,13 +328,19 @@ export default async function Home() {
               <p>{headline}</p>
               <p>{bio}</p>
               <div className="callout">
-                <strong>Looking for:</strong> a hybrid role in Berlin, Munich, Amsterdam, or Lisbon, in a
-                team where ideas get shared and tested.
+                <strong>Looking for:</strong> a hybrid role in Berlin, Munich,
+                Amsterdam, or Lisbon, in a team where ideas get shared and
+                tested.
               </div>
             </div>
           </div>
 
-          <svg className="wave" viewBox="0 0 1200 32" preserveAspectRatio="none" aria-hidden="true">
+          <svg
+            className="wave"
+            viewBox="0 0 1200 32"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
             <path d="M0 16 Q 50 0 100 16 T 200 16 T 300 16 T 400 16 T 500 16 T 600 16 T 700 16 T 800 16 T 900 16 T 1000 16 T 1100 16 T 1200 16 V32 H0 Z" />
           </svg>
 
@@ -301,8 +352,13 @@ export default async function Home() {
                 <div className="readme-head">Architecture: {p.name}</div>
                 <div className="readme-body">
                   <figure className="diagram">
-                    <PipelineDiagram steps={p.pipeline} title={`Architecture of ${p.name}`} />
-                    <figcaption>Simplified. Component names only, no production details.</figcaption>
+                    <PipelineDiagram
+                      steps={p.pipeline}
+                      title={`Architecture of ${p.name}`}
+                    />
+                    <figcaption>
+                      Simplified. Component names only, no production details.
+                    </figcaption>
                   </figure>
                 </div>
               </div>
@@ -339,7 +395,10 @@ export default async function Home() {
             <div className="readme-head">About</div>
             <div className="readme-body">
               <h3>Education</h3>
-              <p>M.Eng. Information Technology, AI specialization, SRH University Heidelberg.</p>
+              <p>
+                M.Eng. Information Technology, AI specialization, SRH University
+                Heidelberg.
+              </p>
               <h3>Experience</h3>
               <ul>
                 {EXPERIENCE.map((e) => (

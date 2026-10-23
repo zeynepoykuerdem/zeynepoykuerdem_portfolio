@@ -4,7 +4,7 @@ import { shortDate } from "@/lib/format";
 import { excerpt, readingTime, shortHash } from "@/lib/posts";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
-import LinkedText from "../LinkedText";
+import LinkedText from "../../../components/LinkedText";
 import Link from "next/link";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -33,8 +33,10 @@ export default async function BlogPostPage({ params }: Props) {
         {time ? <> · {time}</> : null}
       </p>
       <h1>{post.title}</h1>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      {post.image_url && <img className="post-image" src={post.image_url} alt="" />}
+      {post.image_url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className="post-image" src={post.image_url} alt="" />
+      )}
       <p className="body">
         <LinkedText text={post.body} />
       </p>
